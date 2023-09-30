@@ -6,18 +6,18 @@ dotenv.config();
 
 const app = express();
 
-const bot = new TelegramBot(process.env.TELEGRAM_BOT!, { polling: true });
+const bot = new TelegramBot(process.env.TELEGRAM_BOT ?? "", { polling: true });
 
 const getChatId: (msg: TelegramBot.Message) => number | undefined = (msg) =>
   msg.chat?.id;
 
 bot.onText(/\/verify/, (message) => {
-  bot.sendMessage(getChatId(message)!, "Verify yourself first");
+  bot.sendMessage(getChatId(message) ?? "", "Verify yourself first");
 });
 
 bot.onText(/\/new/, (message) => {
   bot.sendMessage(
-    getChatId(message)!,
+    getChatId(message) ?? "",
     `Create a new habit ${message.from?.first_name}`
   );
 });
