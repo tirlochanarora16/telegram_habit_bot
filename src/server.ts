@@ -1,6 +1,7 @@
 import express from "express";
 import dotenv from "dotenv";
 import TelegramBot from "node-telegram-bot-api";
+import connectDB from "./helpers/dbConnection";
 dotenv.config();
 
 const app = express();
@@ -21,4 +22,8 @@ bot.onText(/\/new/, (message) => {
   );
 });
 
-app.listen(3000, () => console.log(`Server running on port 3000! 🚀`));
+app.listen(3000, async () => {
+  if (await connectDB()) {
+    console.log(`Server running on port 3000! 🚀`);
+  }
+});
