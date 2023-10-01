@@ -1,29 +1,20 @@
 import express from "express";
-import dotenv from "dotenv";
-import TelegramBot from "node-telegram-bot-api";
+
 import connectDB from "./helpers/dbConnection";
-dotenv.config();
+import { botOnText } from "./helpers/bot";
 
 const app = express();
 
-const bot = new TelegramBot(process.env.TELEGRAM_BOT ?? "", { polling: true });
-
-const getChatId: (msg: TelegramBot.Message) => number | undefined = (msg) =>
-  msg.chat?.id;
-
-bot.onText(/\/verify/, (message) => {
-  bot.sendMessage(getChatId(message) ?? "", "Verify yourself first");
-});
-
-bot.onText(/\/new/, (message) => {
-  bot.sendMessage(
-    getChatId(message) ?? "",
-    `Create a new habit ${message.from?.first_name}`
-  );
-});
+botOnText(/\/verify/, "Verify yourself hello world 123");
+botOnText(/\/update/, "update yourself AWS EC2");
 
 app.listen(3000, async () => {
-  if (await connectDB()) {
-    console.log(`Server running on port 3000! 🚀`);
+  // awaiting mongodb conenction before proceeding further
+  try {
+    if (await connectDB()) {
+      console.log(`Server running on port 3000! 🚀`);
+    }
+  } catch (err: any) {
+    console.warn(`Error starting the server: ${err}`);
   }
 });
