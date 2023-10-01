@@ -2,9 +2,11 @@ import express from "express";
 
 import connectDB from "./helpers/dbConnection";
 import { botOnText } from "./helpers/bot";
+import { startCallback } from "./helpers/botFunctions";
 
 const app = express();
 
+botOnText(/\/start/, "let's start", startCallback);
 botOnText(/\/verify/, "Verify yourself hello world 123");
 botOnText(/\/update/, "update yourself AWS EC2");
 

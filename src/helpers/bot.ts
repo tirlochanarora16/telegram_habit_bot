@@ -3,13 +3,23 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
-const bot = new TelegramBot(process.env.TELEGRAM_BOT ?? "", { polling: true });
+export const bot = new TelegramBot(process.env.TELEGRAM_BOT ?? "", {
+  polling: true,
+});
 
 const getChatId: (msg: TelegramBot.Message) => number | undefined = (msg) =>
   msg.chat?.id;
 
-export const botOnText = (regex: RegExp, msg: string) => {
-  return bot.onText(regex, (message) => {
-    bot.sendMessage(getChatId(message) ?? "", msg);
+export const botOnText = (
+  regex: RegExp,
+  msg: string,
+  callback?: (messsage: TelegramBot.Message) => any
+) => {
+  return bot.onText(regex, async (message) => {
+    let callBackResponse: any;
+    if (callback) {
+      callBackResponse = await callback(message);
+    }
+    bot.sendMessage(getChatId(message) ?? "", callBackResponse ?? msg);
   });
 };
