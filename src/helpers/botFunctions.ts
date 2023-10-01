@@ -14,11 +14,11 @@ export const startBot = () => {
   }
 };
 
-export const createUser = async (message: TelegramBot.Message) => {
+export const verifyUser = async (message: TelegramBot.Message) => {
   try {
     const { id: userId, first_name, last_name } = message.from!;
 
-    let res: string = "";
+    let res: string | string[] = "";
 
     if (userId) {
       const user = await UserModel.find({
@@ -37,7 +37,11 @@ export const createUser = async (message: TelegramBot.Message) => {
         res =
           "Seems like you have just started with your habits tracking. We are happy that you are on-board with us.";
       } else {
-        res = "You are already a user";
+        res = [
+          "You are already a user.",
+          "Use /create to create a new habit to keep track of.",
+          "Use /stats to see the status of your current habits.",
+        ];
       }
     }
 
