@@ -20,6 +20,13 @@ export const botOnText = (
     if (callback) {
       callBackResponse = await callback(message);
     }
+    // if response is array, then loop through the array and send messages one-by-one.
+    if (Array.isArray(callBackResponse)) {
+      for (const msg of callBackResponse) {
+        await bot.sendMessage(getChatId(message) ?? "", msg);
+      }
+      return;
+    }
     bot.sendMessage(getChatId(message) ?? "", callBackResponse ?? msg);
   });
 };

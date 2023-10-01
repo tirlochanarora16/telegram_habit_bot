@@ -1,7 +1,20 @@
 import TelegramBot from "node-telegram-bot-api";
 import UserModel from "../models/user";
 
-export const startCallback = async (message: TelegramBot.Message) => {
+export const startBot = () => {
+  try {
+    const MESSAGES = [
+      "Welcome to Habits. The only bot you'll need to track your habits.",
+      "Before we continue, let's get you registred first.",
+      "Use the command /verify to verify yourself first.",
+    ];
+    return MESSAGES;
+  } catch (err: any) {
+    console.error(`startBot err: ${err}`);
+  }
+};
+
+export const createUser = async (message: TelegramBot.Message) => {
   try {
     const { id: userId, first_name, last_name } = message.from!;
 
@@ -30,6 +43,6 @@ export const startCallback = async (message: TelegramBot.Message) => {
 
     return res;
   } catch (err: any) {
-    console.error(`startCallback err: ${err}`);
+    console.error(`createUser err: ${err}`);
   }
 };
