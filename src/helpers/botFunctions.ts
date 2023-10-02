@@ -19,7 +19,7 @@ export const verifyUser = async (message: TelegramBot.Message) => {
   try {
     const { id: userId, first_name, last_name } = message.from!;
 
-    let res: string | string[] = "";
+    let res: string[] = [];
 
     if (userId) {
       const user = await UserModel.find({
@@ -35,8 +35,9 @@ export const verifyUser = async (message: TelegramBot.Message) => {
 
         await newUser.save();
 
-        res =
-          "Seems like you have just started with your habits tracking. We are happy that you are on-board with us.";
+        res = [
+          "Seems like you have just started with your habits tracking. We are happy that you are on-board with us.",
+        ];
       } else {
         res = [
           "You are already a user.",
