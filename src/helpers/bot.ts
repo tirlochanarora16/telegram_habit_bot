@@ -24,13 +24,11 @@ export const botOnText = (
     }
 
     const redisKey = `user:${message.from?.id}`;
-    const checkKey = await redis.get(redisKey);
 
-    // keeping a track of last command entered by the user with 30 min expiration.
-    if (!checkKey) {
-      await redis.set(redisKey, regex.source.slice(1));
-      await redis.expire(redisKey, 1800);
-    }
+    // keeping a track of last command entered by the user with 3 min expiration.
+
+    await redis.set(redisKey, regex.source.slice(1));
+    await redis.expire(redisKey, 180);
 
     // if response is array, then loop through the array and send messages one-by-one.
     if (Array.isArray(callBackResponse)) {
