@@ -52,7 +52,10 @@ bot.on("message", async (msg) => {
     if (userKeyValue === "/create" && !currentText?.includes("/")) {
       const res = await createNewHabitInDB(msg);
       if (res) {
-        bot.sendMessage(getChatId(msg) ?? "", `${currentText} added as habit`);
+        bot.sendMessage(
+          getChatId(msg) ?? "",
+          `"${currentText}" added as habit`
+        );
       }
     }
   } catch (err: any) {

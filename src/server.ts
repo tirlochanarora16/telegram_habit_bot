@@ -2,13 +2,19 @@ import express from "express";
 
 import connectDB from "./helpers/dbConnection";
 import { botOnText } from "./helpers/bot";
-import { createHabit, startBot, verifyUser } from "./helpers/botFunctions";
+import {
+  createHabit,
+  listUserHabits,
+  startBot,
+  verifyUser,
+} from "./helpers/botFunctions";
 
 const app = express();
 
 botOnText(/\/start/, "Start Bot", startBot);
 botOnText(/\/verify/, "Verify User", verifyUser);
 botOnText(/\/create/, "Create new habit", createHabit);
+botOnText(/\/list/, "List all habits", listUserHabits);
 
 app.listen(3000, async () => {
   // awaiting mongodb conenction before proceeding further

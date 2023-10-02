@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+import mongoose, { mongo } from "mongoose";
 
 const userSchema = new mongoose.Schema(
   {
@@ -9,16 +9,18 @@ const userSchema = new mongoose.Schema(
     },
     first_name: {
       type: String,
-      required: false,
-      unique: false,
       default: "",
     },
     last_name: {
       type: String,
-      required: false,
-      unique: false,
       default: "",
     },
+    habits: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Habits",
+      },
+    ],
   },
   {
     timestamps: true,

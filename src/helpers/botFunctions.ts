@@ -81,3 +81,15 @@ export const createNewHabitInDB = async (msg: TelegramBot.Message) => {
     return false;
   }
 };
+
+export const listUserHabits = async (msg: TelegramBot.Message) => {
+  try {
+    const user = await UserModel.findOne({ user_id: msg.from?.id });
+
+    const habits = await HabitsModel.find({ user_id: user?._id });
+
+    return habits.map((habit) => habit.name).join("\n");
+  } catch (err: any) {
+    console.error(`listUserHabits err: ${err}`);
+  }
+};
