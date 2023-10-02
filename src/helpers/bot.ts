@@ -36,6 +36,13 @@ export const botOnText = (
         await bot.sendMessage(getChatId(message) ?? "", msg);
       }
       return;
+    } else if (callBackResponse?.constructor === Object) {
+      bot.sendMessage(
+        getChatId(message) ?? "",
+        "What habits did you perform today?",
+        callBackResponse?.options
+      );
+      return;
     }
     bot.sendMessage(getChatId(message) ?? "", callBackResponse ?? msg);
   });
@@ -55,7 +62,7 @@ bot.on("message", async (msg) => {
       if (res) {
         bot.sendMessage(
           getChatId(msg) ?? "",
-          `"${currentText}" added as habit`
+          `"${currentText}" added as a habit.`
         );
       }
     }

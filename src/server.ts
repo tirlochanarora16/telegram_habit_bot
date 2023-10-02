@@ -6,6 +6,7 @@ import {
   createHabit,
   listUserHabits,
   startBot,
+  trackHabit,
   verifyUser,
 } from "./helpers/botFunctions";
 
@@ -15,6 +16,7 @@ botOnText(/\/start/, "Start Bot", startBot);
 botOnText(/\/verify/, "Verify User", verifyUser);
 botOnText(/\/create/, "Create new habit", createHabit);
 botOnText(/\/list/, "List all habits", listUserHabits);
+botOnText(/\/track/, "track habit", trackHabit);
 
 app.listen(3000, async () => {
   // awaiting mongodb conenction before proceeding further

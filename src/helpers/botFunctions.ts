@@ -94,3 +94,34 @@ export const listUserHabits = async (msg: TelegramBot.Message) => {
     console.error(`listUserHabits err: ${err}`);
   }
 };
+
+export const trackHabit = async (msg: TelegramBot.Message) => {
+  try {
+    const habits = await listUserHabits(msg);
+
+    const habitsArr = habits?.replace(/\n/g, ",").split(",");
+
+    let optionsArray: any[] = [];
+
+    for (let i = 0; i < habitsArr!.length; i++) {
+      const current = habitsArr![i];
+
+      optionsArray.push([
+        {
+          text: current,
+          callback_data: current,
+        },
+      ]);
+    }
+
+    const options: TelegramBot.SendMessageOptions = {
+      reply_markup: {
+        inline_keyboard: optionsArray,
+      },
+    };
+
+    return { habitsArr, options };
+  } catch (err: any) {
+    console.error(`trackHabit err: ${err}`);
+  }
+};
