@@ -1,5 +1,6 @@
 import TelegramBot from "node-telegram-bot-api";
 import dotenv from "dotenv";
+import { redis } from "./dbConnection";
 
 dotenv.config();
 
@@ -20,6 +21,13 @@ export const botOnText = (
     if (callback) {
       callBackResponse = await callback(message);
     }
+
+    const redisKey = `user:${message.from?.id}`;
+
+    // keeping a track of last command entered by the user with 30 min expiration.
+    await redis.set(redisKey, regex.source.slice(1));
+    await redis.expire(redisKey, 1800);
+
     // if response is array, then loop through the array and send messages one-by-one.
     if (Array.isArray(callBackResponse)) {
       for (const msg of callBackResponse) {
@@ -30,3 +38,19 @@ export const botOnText = (
     bot.sendMessage(getChatId(message) ?? "", callBackResponse ?? msg);
   });
 };
+
+bot.on("message", async (msg) => {
+  try {
+    const userId = msg.from?.id;
+    const redisKey = `user:${userId}`;
+    const userKeyValue = await redis.get(redisKey);
+
+    // checking the last command the user entered (fetching from redis)
+    // if the last command was "/create", the the subsequent text will be used to add new habits to the habits collection.
+    if (userKeyValue === "/create" && !msg.text?.includes("/")) {
+      console.log("logic for adding new habit to the habits collection");
+    }
+  } catch (err: any) {
+    console.error("bot on message", err);
+  }
+});

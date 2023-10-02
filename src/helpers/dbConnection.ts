@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import { Redis } from "ioredis";
 
 const connectDB = async () => {
   try {
@@ -9,5 +10,10 @@ const connectDB = async () => {
     return false;
   }
 };
+
+export const redis = new Redis({
+  host: "localhost",
+  port: 6379,
+});
 
 export default connectDB;

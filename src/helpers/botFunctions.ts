@@ -55,7 +55,7 @@ export const createHabit = async () => {
   try {
     return [
       "Start typing below to add a new habit to keep track of.",
-      "Tip: Add comma-separated habits to add multiple habits at once. (eg: Reading, Working out, PLaying Guitar,... etc).",
+      "Tip: Add comma-separated habits to add multiple habits at once. (eg: Reading, Working-out, Playing Guitar,... etc).",
       "P.S: Feel free to add icons against your habits. 😉",
     ];
   } catch (err: any) {
