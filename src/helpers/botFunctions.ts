@@ -1,5 +1,6 @@
 import TelegramBot from "node-telegram-bot-api";
 import UserModel from "../models/user";
+import HabitsModel from "../models/habits";
 
 export const startBot = () => {
   try {
@@ -60,5 +61,23 @@ export const createHabit = async () => {
     ];
   } catch (err: any) {
     console.error(`createHabit err: ${err}`);
+  }
+};
+
+export const createNewHabitInDB = async (msg: TelegramBot.Message) => {
+  try {
+    const user = await UserModel.findOne({ user_id: msg.from?.id });
+
+    const newHabit = await HabitsModel.create({
+      name: msg.text,
+      user_id: user?._id,
+    });
+
+    await newHabit.save();
+
+    return true;
+  } catch (err: any) {
+    console.error(`createNewHabitInDB err: ${err}`);
+    return false;
   }
 };

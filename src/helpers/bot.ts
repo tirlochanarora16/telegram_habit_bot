@@ -1,6 +1,7 @@
 import TelegramBot from "node-telegram-bot-api";
 import dotenv from "dotenv";
 import { redis } from "./dbConnection";
+import { createNewHabitInDB } from "./botFunctions";
 
 dotenv.config();
 
@@ -47,8 +48,12 @@ bot.on("message", async (msg) => {
 
     // checking the last command the user entered (fetching from redis)
     // if the last command was "/create", the the subsequent text will be used to add new habits to the habits collection.
-    if (userKeyValue === "/create" && !msg.text?.includes("/")) {
-      console.log("logic for adding new habit to the habits collection");
+    const currentText = msg.text;
+    if (userKeyValue === "/create" && !currentText?.includes("/")) {
+      const res = await createNewHabitInDB(msg);
+      if (res) {
+        bot.sendMessage(getChatId(msg) ?? "", `${currentText} added as habit`);
+      }
     }
   } catch (err: any) {
     console.error("bot on message", err);
