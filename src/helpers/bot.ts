@@ -36,7 +36,9 @@ export const botOnText = (
         await bot.sendMessage(getChatId(message) ?? "", msg);
       }
       return;
-    } else if (callBackResponse?.constructor === Object) {
+    }
+    // this case will run when we will have to pass options to the chat
+    else if (callBackResponse?.constructor === Object) {
       bot.sendMessage(
         getChatId(message) ?? "",
         "What habits did you perform today?",
@@ -44,7 +46,6 @@ export const botOnText = (
       );
       return;
     }
-    bot.sendMessage(getChatId(message) ?? "", callBackResponse ?? msg);
   });
 };
 

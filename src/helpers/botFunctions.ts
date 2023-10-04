@@ -89,7 +89,7 @@ export const listUserHabits = async (msg: TelegramBot.Message) => {
 
     const habits = await HabitsModel.find({ user_id: user?._id });
 
-    return habits.map((habit) => habit.name).join("\n");
+    return habits.map((habit) => habit.name);
   } catch (err: any) {
     console.error(`listUserHabits err: ${err}`);
   }
@@ -99,12 +99,10 @@ export const trackHabit = async (msg: TelegramBot.Message) => {
   try {
     const habits = await listUserHabits(msg);
 
-    const habitsArr = habits?.replace(/\n/g, ",").split(",");
-
     let optionsArray: any[] = [];
 
-    for (let i = 0; i < habitsArr!.length; i++) {
-      const current = habitsArr![i];
+    for (let i = 0; i < habits!.length; i++) {
+      const current = habits![i];
 
       optionsArray.push([
         {
@@ -120,7 +118,7 @@ export const trackHabit = async (msg: TelegramBot.Message) => {
       },
     };
 
-    return { habitsArr, options };
+    return { habits, options };
   } catch (err: any) {
     console.error(`trackHabit err: ${err}`);
   }
