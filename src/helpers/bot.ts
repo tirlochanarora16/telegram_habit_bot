@@ -67,12 +67,37 @@ bot.on("message", async (msg) => {
         );
       }
     }
-    console.log("onMessage", msg);
   } catch (err: any) {
     console.error("bot on message", err);
   }
 });
 
-bot.on("callback_query", (query) => {
-  console.log("hello world", query);
+// this will only run when the user is tracking their habits for the day
+bot.on("callback_query", async (query) => {
+  try {
+    const userId = query?.from?.id;
+    const userKey = `user:${userId}:track`;
+
+    const checkData = await redis.get(userKey);
+    const msg = query.data;
+
+    if (!checkData) {
+      // create new array in redis
+      await redis.set(userKey, JSON.stringify([msg]));
+      return;
+    }
+
+    // update the array in redis
+    let existingData = JSON.parse(checkData);
+
+    if (Array.isArray(existingData)) {
+      existingData.push(msg);
+    }
+
+    const uniqueSelection = new Set(existingData);
+
+    await redis.set(userKey, JSON.stringify(Array.from(uniqueSelection)));
+  } catch (err: any) {
+    console.error(`Bot on callback_query err: ${err}`);
+  }
 });
