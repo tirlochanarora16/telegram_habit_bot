@@ -41,7 +41,7 @@ export const botOnText = (
     else if (callBackResponse?.constructor === Object) {
       bot.sendMessage(
         getChatId(message) ?? "",
-        "What habits did you perform today?",
+        `What habits did you perform today? Type "done" when all habits are selected.`,
         callBackResponse?.options
       );
       return;
@@ -67,7 +67,12 @@ bot.on("message", async (msg) => {
         );
       }
     }
+    console.log("onMessage", msg);
   } catch (err: any) {
     console.error("bot on message", err);
   }
+});
+
+bot.on("callback_query", (query) => {
+  console.log("hello world", query);
 });
