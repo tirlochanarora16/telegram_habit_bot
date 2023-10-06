@@ -14,7 +14,7 @@ const getChatId: (msg: TelegramBot.Message) => number | undefined = (msg) =>
 
 export const botOnText = (
   regex: RegExp,
-  msg: string,
+  _: string,
   callback?: (messsage: TelegramBot.Message) => any
 ) => {
   return bot.onText(regex, async (message) => {
@@ -25,10 +25,10 @@ export const botOnText = (
 
     const redisKey = `user:${message.from?.id}`;
 
-    // keeping a track of last command entered by the user with 3 min expiration.
+    // keeping a track of last command entered by the user with 5 min expiration.
 
     await redis.set(redisKey, regex.source.slice(1));
-    await redis.expire(redisKey, 180);
+    await redis.expire(redisKey, 300);
 
     // if response is array, then loop through the array and send messages one-by-one.
     if (Array.isArray(callBackResponse)) {
