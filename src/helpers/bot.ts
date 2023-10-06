@@ -69,12 +69,10 @@ bot.on("message", async (msg) => {
           );
         }
       } else if (userKeyValue === "/track") {
+        // here we will store the selected habits in mongodb
         addSelectedHabitsToDB(msg);
       }
     }
-    // handling the case when the user has selected all the habits for the day
-    // here we will store the selected habits in mongodb
-    // and will clear the array from redis
   } catch (err: any) {
     console.error("bot on message", err);
   }
