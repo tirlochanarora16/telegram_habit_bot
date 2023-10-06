@@ -76,6 +76,9 @@ export const createNewHabitInDB = async (msg: TelegramBot.Message) => {
       user_id: user?._id,
     });
 
+    user?.habits.push(newHabit?._id);
+
+    await user?.save();
     await newHabit.save();
 
     return true;
