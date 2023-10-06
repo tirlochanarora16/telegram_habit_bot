@@ -90,11 +90,11 @@ export const createNewHabitInDB = async (msg: TelegramBot.Message) => {
 
 export const listUserHabits = async (msg: TelegramBot.Message) => {
   try {
-    const user = await UserModel.findOne({ user_id: msg.from?.id });
+    const user = await UserModel.findOne({ user_id: msg.from?.id })
+      .populate("habits")
+      .exec();
 
-    const habits = await HabitsModel.find({ user_id: user?._id });
-
-    return habits.map((habit) => habit.name);
+    return user?.habits.map((habit: any) => habit.name);
   } catch (err: any) {
     console.error(`listUserHabits err: ${err}`);
   }
