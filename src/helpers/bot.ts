@@ -1,7 +1,7 @@
 import TelegramBot from "node-telegram-bot-api";
 import dotenv from "dotenv";
 import { redis } from "./dbConnection";
-import { createNewHabitInDB } from "./botFunctions";
+import { addSelectedHabitsToDB, createNewHabitInDB } from "./botFunctions";
 
 dotenv.config();
 
@@ -58,13 +58,18 @@ bot.on("message", async (msg) => {
     // checking the last command the user entered (fetching from redis)
     // if the last command was "/create", the the subsequent text will be used to add new habits to the habits collection.
     const currentText = msg.text;
-    if (userKeyValue === "/create" && !currentText?.includes("/")) {
-      const res = await createNewHabitInDB(msg);
-      if (res) {
-        bot.sendMessage(
-          getChatId(msg) ?? "",
-          `"${currentText}" added as a habit.`
-        );
+    if (!currentText?.includes("/")) {
+      if (userKeyValue === "/create") {
+        const res = await createNewHabitInDB(msg);
+        // if "res" is true, then the habit is successfully added in the DB
+        if (res) {
+          bot.sendMessage(
+            getChatId(msg) ?? "",
+            `"${currentText}" added as a habit.`
+          );
+        }
+      } else if (userKeyValue === "/track") {
+        addSelectedHabitsToDB(msg);
       }
     }
     // handling the case when the user has selected all the habits for the day

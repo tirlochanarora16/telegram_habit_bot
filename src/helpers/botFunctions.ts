@@ -123,3 +123,10 @@ export const trackHabit = async (msg: TelegramBot.Message) => {
     console.error(`trackHabit err: ${err}`);
   }
 };
+
+export const addSelectedHabitsToDB = async (msg: TelegramBot.Message) => {
+  try {
+  } catch (err: any) {
+    console.error(`addSelectedHabitsToDB err: ${err}`);
+  }
+};
