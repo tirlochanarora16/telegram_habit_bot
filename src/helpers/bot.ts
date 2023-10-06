@@ -68,9 +68,22 @@ bot.on("message", async (msg) => {
             `"${currentText}" added as a habit.`
           );
         }
-      } else if (userKeyValue === "/track") {
+      } else if (
+        userKeyValue === "/track" &&
+        (currentText?.trim()?.toLowerCase() === "done" ||
+          currentText?.trim()?.toLowerCase() === "done.")
+      ) {
         // here we will store the selected habits in mongodb
-        addSelectedHabitsToDB(msg);
+        const res = await addSelectedHabitsToDB(msg);
+
+        if (res) {
+          bot.sendMessage(
+            getChatId(msg) ?? "",
+            "Habits successfully added for the day. Keep going!"
+          );
+
+          await redis.del(`user:${msg.from?.id}:track`);
+        }
       }
     }
   } catch (err: any) {

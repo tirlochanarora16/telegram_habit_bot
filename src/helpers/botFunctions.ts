@@ -1,6 +1,8 @@
 import TelegramBot from "node-telegram-bot-api";
 import UserModel from "../models/user";
 import HabitsModel from "../models/habits";
+import { redis } from "./dbConnection";
+import TrackerModel from "../models/tracker";
 
 export const startBot = () => {
   try {
@@ -126,6 +128,19 @@ export const trackHabit = async (msg: TelegramBot.Message) => {
 
 export const addSelectedHabitsToDB = async (msg: TelegramBot.Message) => {
   try {
+    const user = await UserModel.findOne({ user_id: msg?.from?.id });
+    let userHabits = await redis.get(`user:${msg?.from?.id}:track`);
+    userHabits = JSON.parse(userHabits!);
+
+    const newRecord = await TrackerModel.create({
+      user_id: user?._id,
+      for_date: new Date(),
+      habits_completed: userHabits,
+    });
+
+    await newRecord.save();
+
+    return true;
   } catch (err: any) {
     console.error(`addSelectedHabitsToDB err: ${err}`);
   }
