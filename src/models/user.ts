@@ -21,6 +21,12 @@ const userSchema = new mongoose.Schema(
         ref: "Habits",
       },
     ],
+    days_completed: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Tracker",
+      },
+    ],
   },
   {
     timestamps: true,

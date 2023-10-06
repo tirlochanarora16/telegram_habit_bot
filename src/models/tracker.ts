@@ -11,12 +11,21 @@ const trackerSchema = new mongoose.Schema(
       type: Date,
       required: true,
     },
-    habits_completed: [String],
+    habits_completed: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Habits",
+      },
+    ],
   },
   {
     timestamps: true,
   }
 );
+
+trackerSchema.virtual("formatted_date").get(function () {
+  return this.for_date.toLocaleDateString("en-IN");
+});
 
 const TrackerModel = mongoose.model("Tracker", trackerSchema);
 
