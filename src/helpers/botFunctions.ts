@@ -156,18 +156,42 @@ export const trackHabit = async (msg: TelegramBot.Message) => {
 
 export const addSelectedHabitsToDB = async (msg: TelegramBot.Message) => {
   try {
-    const user = await UserModel.findOne({ user_id: msg?.from?.id });
-    let userHabits = await redis.get(`user:${msg?.from?.id}:track`);
-    userHabits = JSON.parse(userHabits!);
-
-    const newRecord = await TrackerModel.create({
-      user_id: user?._id,
-      for_date: new Date(),
-      habits_completed: userHabits,
+    const checkUserHabits = await TrackerModel.findOne({
+      user_telegram_id: msg?.from?.id,
+      for_date: new Date().toLocaleDateString("en-IN"),
     });
 
-    await newRecord.save();
+    // getting selected habits from redis
+    let userHabits = await redis.get(`user:${msg?.from?.id}:track`);
+    if (userHabits) {
+      userHabits = JSON.parse(userHabits);
+    }
 
+    if (!checkUserHabits) {
+      const user = await UserModel.findOne({ user_id: msg.from?.id });
+      const newRecord = await TrackerModel.create({
+        user_id: user?._id,
+        user_telegram_id: msg.from?.id,
+        for_date: new Date().toLocaleDateString("en-IN"),
+        habits_completed: userHabits,
+      });
+
+      await newRecord.save();
+    } else {
+      if (Array.isArray(userHabits)) {
+        // converting type ObjectID to string
+        const userHabitsInDB = checkUserHabits.habits_completed.map((habit) =>
+          habit.toString()
+        );
+
+        // avoiding any duplication using Set
+        const updatedHabits = new Set([...userHabitsInDB, ...userHabits]);
+
+        // updating the original "habits_completed" array and saving it.
+        checkUserHabits.habits_completed = Array.from(updatedHabits);
+        await checkUserHabits.save();
+      }
+    }
     return true;
   } catch (err: any) {
     console.error(`addSelectedHabitsToDB err: ${err}`);
