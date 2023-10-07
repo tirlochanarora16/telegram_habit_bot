@@ -1,8 +1,4 @@
-import mongoose, { Document } from "mongoose";
-
-interface HabitTracker extends Document {
-  formatted_date: string;
-}
+import mongoose from "mongoose";
 
 const trackerSchema = new mongoose.Schema(
   {
@@ -14,10 +10,9 @@ const trackerSchema = new mongoose.Schema(
     user_telegram_id: {
       type: String,
       required: true,
-      unique: true,
     },
     for_date: {
-      type: Date,
+      type: String,
       required: true,
     },
     habits_completed: [
@@ -32,10 +27,6 @@ const trackerSchema = new mongoose.Schema(
   }
 );
 
-trackerSchema.virtual("formatted_date").get(function () {
-  return this.for_date.toLocaleDateString("en-IN");
-});
-
-const TrackerModel = mongoose.model<HabitTracker>("Tracker", trackerSchema);
+const TrackerModel = mongoose.model("Tracker", trackerSchema);
 
 export default TrackerModel;
