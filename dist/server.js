@@ -1,21 +1,35 @@
 "use strict";
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
-const dotenv_1 = __importDefault(require("dotenv"));
-const node_telegram_bot_api_1 = __importDefault(require("node-telegram-bot-api"));
-dotenv_1.default.config();
+const dbConnection_1 = __importDefault(require("./helpers/dbConnection"));
+const bot_1 = require("./helpers/bot");
+const botFunctions_1 = require("./helpers/botFunctions");
 const app = (0, express_1.default)();
-const bot = new node_telegram_bot_api_1.default(process.env.TELEGRAM_BOT, { polling: true });
-const getChatId = (msg) => { var _a; return (_a = msg.chat) === null || _a === void 0 ? void 0 : _a.id; };
-bot.onText(/\/verify/, (message) => {
-    bot.sendMessage(getChatId(message), "Verify yourself first");
-});
-bot.onText(/\/new/, (message) => {
-    var _a, _b;
-    console.log("user id", (_a = message.from) === null || _a === void 0 ? void 0 : _a.id);
-    bot.sendMessage(getChatId(message), `Create a new habit ${(_b = message.from) === null || _b === void 0 ? void 0 : _b.first_name}`);
-});
-app.listen(3000, () => console.log(`Server running on port 3000! 🚀`));
+(0, bot_1.botOnText)(/\/start/, "Start Bot", botFunctions_1.startBot);
+(0, bot_1.botOnText)(/\/verify/, "Verify User", botFunctions_1.verifyUser);
+(0, bot_1.botOnText)(/\/create/, "Create new habit", botFunctions_1.createHabit);
+(0, bot_1.botOnText)(/\/list/, "List all habits", botFunctions_1.listUserHabits);
+(0, bot_1.botOnText)(/\/track/, "track habit", botFunctions_1.trackHabit);
+app.listen(3000, () => __awaiter(void 0, void 0, void 0, function* () {
+    // awaiting mongodb conenction before proceeding further
+    try {
+        if (yield (0, dbConnection_1.default)()) {
+            console.log(`Server running on port 3000! 🚀`);
+        }
+    }
+    catch (err) {
+        console.warn(`Error starting the server: ${err}`);
+    }
+}));
