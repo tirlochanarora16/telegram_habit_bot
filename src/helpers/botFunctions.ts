@@ -4,6 +4,7 @@ import HabitsModel from "../models/habits";
 import { redis } from "./dbConnection";
 import TrackerModel from "../models/tracker";
 import { VERIFY_ACCOUNT, checkUserExists } from "./authentication";
+import { isStringArray } from "./typeCheck";
 
 export const startBot = () => {
   try {
@@ -94,7 +95,14 @@ export const createNewHabitInDB = async (msg: TelegramBot.Message) => {
   }
 };
 
-export const listUserHabits = async (msg: TelegramBot.Message) => {
+interface ListUserHabitsRes {
+  id: string;
+  name: string;
+}
+
+export const listUserHabits = async (
+  msg: TelegramBot.Message
+): Promise<string[] | ListUserHabitsRes[] | undefined> => {
   try {
     const userInDB = await checkUserExists(msg);
 
@@ -106,7 +114,10 @@ export const listUserHabits = async (msg: TelegramBot.Message) => {
       .populate("habits")
       .exec();
 
-    return user?.habits.map((habit: any) => habit.name);
+    return user?.habits.map((habit: any) => ({
+      id: habit._id,
+      name: habit?.name,
+    }));
   } catch (err: any) {
     console.error(`listUserHabits err: ${err}`);
   }
@@ -116,26 +127,28 @@ export const trackHabit = async (msg: TelegramBot.Message) => {
   try {
     const habits = await listUserHabits(msg);
 
-    let optionsArray: any[] = [];
+    if (habits && !isStringArray(habits)) {
+      let optionsArray: any[] = [];
 
-    for (let i = 0; i < habits!.length; i++) {
-      const current = habits![i];
+      for (let i = 0; i < habits!.length; i++) {
+        const current = habits![i];
 
-      optionsArray.push([
-        {
-          text: current,
-          callback_data: current,
+        optionsArray.push([
+          {
+            text: current.name,
+            callback_data: current.id,
+          },
+        ]);
+      }
+
+      const options: TelegramBot.SendMessageOptions = {
+        reply_markup: {
+          inline_keyboard: optionsArray,
         },
-      ]);
+      };
+
+      return { habits, options };
     }
-
-    const options: TelegramBot.SendMessageOptions = {
-      reply_markup: {
-        inline_keyboard: optionsArray,
-      },
-    };
-
-    return { habits, options };
   } catch (err: any) {
     console.error(`trackHabit err: ${err}`);
   }
