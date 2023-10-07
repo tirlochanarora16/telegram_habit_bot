@@ -41,7 +41,7 @@ export const botOnText = (
     else if (callBackResponse?.constructor === Object) {
       bot.sendMessage(
         getChatId(message) ?? "",
-        `What habits did you perform today? Type "done" when all habits are selected.`,
+        `What habits did you perform today? Type "Done" when all habits are selected.`,
         callBackResponse?.options
       );
       return;
@@ -53,13 +53,13 @@ bot.on("message", async (msg) => {
   try {
     const userId = msg.from?.id;
     const redisKey = `user:${userId}`;
-    const userKeyValue = await redis.get(redisKey);
+    const userLastCommand = await redis.get(redisKey);
 
     // checking the last command the user entered (fetching from redis)
     // if the last command was "/create", the the subsequent text will be used to add new habits to the habits collection.
     const currentText = msg.text;
     if (!currentText?.includes("/")) {
-      if (userKeyValue === "/create") {
+      if (userLastCommand === "/create") {
         const res = await createNewHabitInDB(msg);
         // if "res" is true, then the habit is successfully added in the DB
         if (res) {
@@ -69,9 +69,8 @@ bot.on("message", async (msg) => {
           );
         }
       } else if (
-        userKeyValue === "/track" &&
-        (currentText?.trim()?.toLowerCase() === "done" ||
-          currentText?.trim()?.toLowerCase() === "done.")
+        userLastCommand === "/track" &&
+        currentText?.trim()?.toLowerCase()?.includes("done")
       ) {
         // here we will store the selected habits in mongodb
         const res = await addSelectedHabitsToDB(msg);
