@@ -3,6 +3,7 @@ import UserModel from "../models/user";
 import HabitsModel from "../models/habits";
 import { redis } from "./dbConnection";
 import TrackerModel from "../models/tracker";
+import { VERIFY_ACCOUNT, checkUserExists } from "./authentication";
 
 export const startBot = () => {
   try {
@@ -55,8 +56,13 @@ export const verifyUser = async (message: TelegramBot.Message) => {
   }
 };
 
-export const createHabit = async () => {
+export const createHabit = async (msg: TelegramBot.Message) => {
   try {
+    const isUserInDB = await checkUserExists(msg);
+    if (!isUserInDB) {
+      return VERIFY_ACCOUNT;
+    }
+
     return [
       "Start typing below to add a new habit to keep track of.",
       "Tip: Add comma-separated habits to add multiple habits at once. (eg: Reading, Working-out, Playing Guitar,... etc).",
@@ -90,6 +96,12 @@ export const createNewHabitInDB = async (msg: TelegramBot.Message) => {
 
 export const listUserHabits = async (msg: TelegramBot.Message) => {
   try {
+    const userInDB = await checkUserExists(msg);
+
+    if (!userInDB) {
+      return VERIFY_ACCOUNT;
+    }
+
     const user = await UserModel.findOne({ user_id: msg.from?.id })
       .populate("habits")
       .exec();
