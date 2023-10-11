@@ -170,6 +170,8 @@ const addSelectedHabitsToDB = (msg) => __awaiter(void 0, void 0, void 0, functio
                 for_date: new Date().toLocaleDateString("en-IN"),
                 habits_completed: userHabits,
             });
+            user === null || user === void 0 ? void 0 : user.days_completed.push(newRecord === null || newRecord === void 0 ? void 0 : newRecord._id);
+            yield (user === null || user === void 0 ? void 0 : user.save());
             yield newRecord.save();
         }
         else {

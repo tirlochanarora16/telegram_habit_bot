@@ -9,10 +9,12 @@ const trackerSchema = new mongoose_1.default.Schema({
         type: mongoose_1.default.Schema.Types.ObjectId,
         ref: "Users",
         required: true,
+        unique: false,
     },
     user_telegram_id: {
         type: String,
         required: true,
+        unique: false,
     },
     for_date: {
         type: String,
