@@ -176,6 +176,10 @@ export const addSelectedHabitsToDB = async (msg: TelegramBot.Message) => {
         habits_completed: userHabits,
       });
 
+      user?.days_completed.push(newRecord?._id);
+
+      await user?.save();
+
       await newRecord.save();
     } else {
       if (Array.isArray(userHabits)) {
